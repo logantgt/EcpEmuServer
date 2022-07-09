@@ -11,12 +11,16 @@ Compared to HarmonySpan, EcpEmuServer aims to be;
  - Easier to configure, with an intuitive rule-based architecture that allows many endpoints to be bound to a single button;
  - Easier to expand and maintain - It does not depend on any third party libraries like the JS version did, and .NET is much more appropriate for this type of application.
 
+![EcpEmuServer](https://raw.githubusercontent.com/AShifter/EcpEmuServer/main/docs/Window.png)
+
 ## Setup
 Ensure your target system has a recent installation of the [.NET Core 6.0 Runtime and ASP.NET Core Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) which are available from Microsoft's website for many different platforms.
 
 Download the latest EcpEmuServer binary [from the releases page](https://github.com/AShifter/EcpEmuServer/releases) for your platform.
 
 Extract the zip file and run the main executable. *On Linux/macOS machines you might have to run `chmod +x ./EcpEmuServer` on the binary itself to enable the executable flag for that file.* If you are asked for permission to let EcpEmuServer through your OS' firewall, allow it for both private and public networks.
+
+![Windows Defender Firewall Permission Dialogue](https://raw.githubusercontent.com/AShifter/EcpEmuServer/main/docs/Firewall.png)
 
 On first startup, a simple ``rules.xml`` file will be created that should look something like this **(please close the app before trying to write to the ``rules.xml`` file)**; 
 
