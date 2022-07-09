@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Diagnostics;
+using System.Net;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -21,8 +22,9 @@ namespace EcpEmuServer
                 Rule blankRule = new Rule();
                 blankRule.Name = "New Rule";
                 blankRule.Button = "None";
-                blankRule.Action = HttpAction.GET;
+                blankRule.Action = RuleAction.HttpGET;
                 blankRule.EndPoint = "https://www.example.com/";
+                blankRule.ExData = " ";
 
                 rules.AddRule(blankRule);
 
@@ -61,7 +63,7 @@ namespace EcpEmuServer
 
         public void Execute(string button)
         {
-            HttpStatusCode statusCode = HttpStatusCode.NotFound;
+            HttpStatusCode statusCode = HttpStatusCode.Unused;
 
             foreach (Rule rule in rules.ruleList)
             {
@@ -69,7 +71,7 @@ namespace EcpEmuServer
                 {
                     switch (rule.Action)
                     {
-                        case HttpAction.GET:
+                        case RuleAction.HttpGET:
                             try
                             {
                                 statusCode = httpClient.GetAsync(rule.EndPoint).Result.StatusCode;
@@ -79,14 +81,28 @@ namespace EcpEmuServer
                                 statusCode = HttpStatusCode.NotFound;
                             }
                             break;
-                        case HttpAction.POST:
+                        case RuleAction.HttpPOST:
                             try
                             {
-                                statusCode = httpClient.PostAsync(rule.EndPoint, new StringContent("")).Result.StatusCode;
+                                statusCode = httpClient.PostAsync(rule.EndPoint, new StringContent(rule.ExData)).Result.StatusCode;
                             }
                             catch
                             {
                                 statusCode = HttpStatusCode.NotFound;
+                            }
+                            break;
+                        case RuleAction.Execute:
+                            ProcessStartInfo startInfo = new();
+                            startInfo.UseShellExecute = false;
+                            startInfo.FileName = rule.EndPoint;
+                            startInfo.WorkingDirectory = Path.GetFullPath(rule.EndPoint);
+                            startInfo.Arguments = rule.ExData;
+                            startInfo.RedirectStandardOutput = true;
+
+                            using (Process proc = Process.Start(startInfo))
+                            {
+                                while (!proc.StandardOutput.EndOfStream) Console.WriteLine(proc.StandardOutput.ReadLine());
+                                proc.WaitForExit();
                             }
                             break;
                         default:
@@ -102,7 +118,7 @@ namespace EcpEmuServer
                             Logger.Log(Logger.LogSeverity.success, $"Rule {rule.Name} sent, got HTTP {HttpStatusCode.OK}");
                             break;
                         default:
-                            Logger.Log(Logger.LogSeverity.info, $"Rule {rule.Name} sent, got HTTP {statusCode}");
+                            Logger.Log(Logger.LogSeverity.info, $"Rule {rule.Name} ran");
                             break;
                     }
                 }
@@ -133,15 +149,17 @@ namespace EcpEmuServer
     {
         private string name;
         private string button;
-        private HttpAction action;
+        private RuleAction action;
         private string endPoint;
+        private string exData;
 
         public Rule()
         {
             this.name = "";
             this.button = "";
-            this.action = HttpAction.GET;
+            this.action = RuleAction.HttpGET;
             this.endPoint = "";
+            this.exData = "";
         }
 
         public string Name
@@ -166,7 +184,7 @@ namespace EcpEmuServer
                 button = value;
             }
         }
-        public HttpAction Action
+        public RuleAction Action
         {
             get
             {
@@ -188,11 +206,23 @@ namespace EcpEmuServer
                 endPoint = value;
             }
         }
+        public string ExData
+        {
+            get
+            {
+                return exData;
+            }
+            set
+            {
+                exData = value;
+            }
+        }
     }
 
-    public enum HttpAction
+    public enum RuleAction
     {
-        GET,
-        POST
+        HttpGET,
+        HttpPOST,
+        Execute
     }
 }
