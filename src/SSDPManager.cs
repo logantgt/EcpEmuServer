@@ -41,7 +41,7 @@ namespace EcpEmuServer
             }
             catch (Exception ex)
             {
-                Logger.Log(Logger.LogSeverity.error, ex.ToString());
+                Logger.Log(Logger.LogSeverity.error, ex.Message);
             }
         }
         public static string GetLocalIPAddress()

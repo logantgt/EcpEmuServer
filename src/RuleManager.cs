@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Net;
+using System.Text;
 using System.Xml.Serialization;
 
 namespace EcpEmuServer
@@ -39,14 +40,11 @@ namespace EcpEmuServer
             }
 
             // Load rules from XML
-            using (StreamReader reader = new StreamReader(File.OpenRead("./rules.xml")))
+            string rawXml = File.ReadAllText("./rules.xml");
+            rawXml = rawXml.Replace("&", "&amp;");
+            using (StreamReader reader = new StreamReader(new MemoryStream(Encoding.UTF8.GetBytes(rawXml))))
             {
                 rules = (RuleList)serializer.Deserialize(reader);
-                if (rules == null)
-                {
-                    Logger.Log(Logger.LogSeverity.error, $"Couldn't load rules from rules.xml, no actions will be taken.");
-                    rules = new RuleList();
-                }
             }
 
             if (rules.ruleList.Count > 0)
@@ -97,13 +95,13 @@ namespace EcpEmuServer
                         switch (statusCode)
                         {
                             case HttpStatusCode.NotFound:
-                                throw new BadHttpRequestException($"Rule {rule.Name} failed, got HTTP {HttpStatusCode.NotFound}");
+                                throw new BadHttpRequestException($"Rule \"{rule.Name}\" failed, got HTTP {HttpStatusCode.NotFound} from {rule.EndPoint}");
                                 break;
                             case HttpStatusCode.OK:
-                                Logger.Log(Logger.LogSeverity.success, $"Rule {rule.Name} sent, got HTTP {HttpStatusCode.OK}");
+                                Logger.Log(Logger.LogSeverity.success, $"Rule \"{rule.Name}\" ran, got HTTP {HttpStatusCode.OK} from {rule.EndPoint}");
                                 break;
                             default:
-                                Logger.Log(Logger.LogSeverity.info, $"Rule {rule.Name} ran");
+                                Logger.Log(Logger.LogSeverity.info, $"Rule \"{rule.Name}\" ran");
                                 break;
                         }
                     }
