@@ -10,7 +10,7 @@ namespace EcpEmuServer
             {
                 Console.Title = "EcpEmuServer";
 
-                Logger.Log(Logger.LogSeverity.info, "EcpEmuServer started");
+                Logger.Log(Logger.LogSeverity.info, "EcpEmuServer started (press CTRL+C twice to terminate)");
                 RuleManager ruleManager = new RuleManager();
 
                 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
