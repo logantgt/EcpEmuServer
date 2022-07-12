@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.Net;
-using System.Xml;
 using System.Xml.Serialization;
 
 namespace EcpEmuServer
@@ -19,46 +18,44 @@ namespace EcpEmuServer
             {
                 Logger.Log(Logger.LogSeverity.warn, "rules.xml was not found, generating blank...");
 
-                Rule blankRule = new Rule();
-                blankRule.Name = "New Rule";
-                blankRule.Button = "None";
-                blankRule.Action = RuleAction.HttpGET;
-                blankRule.EndPoint = "https://www.example.com/";
-                blankRule.ExData = " ";
-
-                rules.AddRule(blankRule);
-
-                XmlWriterSettings writerSettings = new XmlWriterSettings();
-                writerSettings.Indent = true;
-
-                using (XmlWriter writer = XmlWriter.Create(File.CreateText("./rules.xml"), writerSettings))
+                using (StreamWriter writer = new StreamWriter(File.Create("./rules.xml")))
                 {
-                    serializer.Serialize(writer, rules);
+                    // Default configuration
+                    writer.WriteLine("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                                     "<ecpemuserver xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n" +
+                                     "  <rules>\n" +
+                                     "    <rule>\n" +
+                                     "      <Name>New Rule</Name>\n" +
+                                     "      <Button>None</Button>\n" +
+                                     "      <Action>HttpGET</Action>\n" +
+                                     "      <EndPoint>https://www.example.com/</EndPoint>\n" +
+                                     "      <ExData> </ExData>\n" +
+                                     "    </rule>\n" +
+                                     "  </rules>\n" +
+                                     "</ecpemuserver>");
                 }
-
+                
                 Logger.Log(Logger.LogSeverity.info, "Generated new rules.xml, please configure EcpEmuServer rules and restart");
             }
-            else
-            {
-                // Load rules from XML
-                using (XmlReader reader = XmlReader.Create(new StreamReader("./rules.xml")))
-                {
-                    rules = (RuleList)serializer.Deserialize(reader);
-                    if (rules == null)
-                    {
-                        Logger.Log(Logger.LogSeverity.error, $"Couldn't load rules from rules.xml, no actions will be taken.");
-                        rules = new RuleList();
-                    }
-                }
 
-                if (rules.ruleList.Count > 0)
+            // Load rules from XML
+            using (StreamReader reader = new StreamReader(File.OpenRead("./rules.xml")))
+            {
+                rules = (RuleList)serializer.Deserialize(reader);
+                if (rules == null)
                 {
-                    foreach (Rule rule in rules.ruleList)
-                    {
-                        Logger.Log(Logger.LogSeverity.info, $"Loaded rule \"{rule.Name}\" from rules.xml for button \"{rule.Button}\"");
-                    }
+                    Logger.Log(Logger.LogSeverity.error, $"Couldn't load rules from rules.xml, no actions will be taken.");
+                    rules = new RuleList();
                 }
             }
+
+            if (rules.ruleList.Count > 0)
+            {
+                foreach (Rule rule in rules.ruleList)
+                {
+                    Logger.Log(Logger.LogSeverity.info, $"Loaded rule \"{rule.Name}\" from rules.xml for button \"{rule.Button}\"");
+                }
+            }        
         }
 
         public void Execute(string button)
