@@ -39,7 +39,7 @@ namespace EcpEmuServer
             });
 
             Thread apiThread = new Thread(new ThreadStart(app.Run));
-            Thread ssdpThread = new Thread(new ThreadStart(SSDPHandler.StartSSDP));
+            Thread ssdpThread = new Thread(new ThreadStart(SSDPManager.StartSSDP));
 
             apiThread.Start();
             Logger.Log(Logger.LogSeverity.success, "Button API running");

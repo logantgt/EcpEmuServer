@@ -4,7 +4,7 @@ using System.Text;
 
 namespace EcpEmuServer
 {
-    public class SSDPHandler
+    public class SSDPManager
     {
         public static void StartSSDP()
         {
@@ -59,7 +59,7 @@ namespace EcpEmuServer
             $"Cache-Control: max-age=3600\r\n" +
             $"NT: roku:ecp\r\n" +
             $"NTS: ssdp:alive\r\n" +
-            $"Location: http://{SSDPHandler.GetLocalIPAddress()}:8060/\r\n" +
+            $"Location: http://{SSDPManager.GetLocalIPAddress()}:8060/\r\n" +
             $"USN: uuid:roku:ecp:{Dns.GetHostName()}\r\n\r\n");
 
         public static readonly byte[] ecpDeviceOKMessage = Encoding.ASCII.GetBytes(
@@ -68,7 +68,7 @@ namespace EcpEmuServer
             $"USN: uuid:roku:ecp:{Dns.GetHostName()}::roku:ecp\r\n" +
             $"Cache-Control: max-age=3600\r\n" +
             $"SERVER: Server: Roku/9.3.0 UPnp/1.0 Roku/9.3.0\r\n" +
-            $"Location: http://{SSDPHandler.GetLocalIPAddress()}:8060/\r\n\r\n");
+            $"Location: http://{SSDPManager.GetLocalIPAddress()}:8060/\r\n\r\n");
 
         public static readonly string ecpDeviceRootResponse =
             $"<root>" +
