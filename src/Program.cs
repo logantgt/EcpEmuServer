@@ -24,7 +24,6 @@ namespace EcpEmuServer
 
             app.MapGet("/query/apps", () =>
             {
-                
                 Logger.Log(Logger.LogSeverity.info, $"Client requested /query/apps");
 
                 return Results.Content("<apps></apps>", "application/xml");

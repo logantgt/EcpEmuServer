@@ -71,15 +71,15 @@ namespace EcpEmuServer
             $"Location: http://{SSDPHandler.GetLocalIPAddress()}:8060/\r\n\r\n");
 
         public static readonly string ecpDeviceRootResponse =
-            "<root>" +
-            "<device>" +
-            "<friendlyName>EcpEmuServer</friendlyName>" +
-            "<manufacturer>Roku</manufacturer>" +
-            "<manufacturerURL>http://www.github.com/ashifter/EcpEmuServer</manufacturerURL>" +
-            "<modelName>Streaming Stick+</modelName>" +
-            "<serialNumber>" + Dns.GetHostName() + "</serialNumber>" +
-            "<UDN>uuid:" + Dns.GetHostName() + "</UDN>" +
-            "</device>" +
-            "</root>";
+            $"<root>" +
+            $"<device>" +
+            $"<friendlyName>EcpEmuServer</friendlyName>" +
+            $"<manufacturer>Roku</manufacturer>" +
+            $"<manufacturerURL>http://www.github.com/ashifter/EcpEmuServer</manufacturerURL>" +
+            $"<modelName>Streaming Stick+</modelName>" +
+            $"<serialNumber>{Dns.GetHostName()}</serialNumber>" +
+            $"<UDN>uuid:{Dns.GetHostName()}</UDN>" +
+            $"</device>" +
+            $"</root>";
     }
 }
