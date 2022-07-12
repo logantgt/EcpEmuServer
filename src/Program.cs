@@ -14,6 +14,7 @@ namespace EcpEmuServer
                 RuleManager ruleManager = new RuleManager();
 
                 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+                builder.WebHost.UseUrls("http://*:8060/");
                 WebApplication app = builder.Build();
 
                 app.MapGet("/", () =>
