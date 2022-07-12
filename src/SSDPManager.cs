@@ -51,7 +51,11 @@ namespace EcpEmuServer
             {
                 if (ip.AddressFamily == AddressFamily.InterNetwork)
                 {
-                    return ip.ToString();
+                    // Don't run on local loopback
+                    if (!ip.ToString().Contains("127.0."))
+                    {
+                        return ip.ToString();
+                    }
                 }
             }
             throw new Exception("No network adapters with an IPv4 address available!");
