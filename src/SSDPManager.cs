@@ -8,33 +8,40 @@ namespace EcpEmuServer
     {
         public static void StartSSDP()
         {
-            IPEndPoint multicastEndpoint = new IPEndPoint(IPAddress.Parse("239.255.255.250"), 1900);
-            IPEndPoint localEndpoint = new IPEndPoint(IPAddress.Any, 1900);
-
-            UdpClient udpServer = new UdpClient();
-            UdpClient udpClient = new UdpClient();
-
-            udpServer.Client.Bind(localEndpoint);
-
-            udpServer.JoinMulticastGroup(multicastEndpoint.Address);
-
-            udpClient.Connect(multicastEndpoint);
-
-            Logger.Log(Logger.LogSeverity.warn, $"SSDP Multicasting with address {GetLocalIPAddress()} (if this is not your preferred interface, try disabling others)");
-
-            while (true)
+            try
             {
-                byte[] data = udpServer.Receive(ref multicastEndpoint);
-                string res = Encoding.ASCII.GetString(data);
-                if (res.Contains("M-SEARCH"))
+                IPEndPoint multicastEndpoint = new IPEndPoint(IPAddress.Parse("239.255.255.250"), 1900);
+                IPEndPoint localEndpoint = new IPEndPoint(IPAddress.Any, 1900);
+
+                UdpClient udpServer = new UdpClient();
+                UdpClient udpClient = new UdpClient();
+
+                udpServer.Client.Bind(localEndpoint);
+
+                udpServer.JoinMulticastGroup(multicastEndpoint.Address);
+
+                udpClient.Connect(multicastEndpoint);
+
+                Logger.Log(Logger.LogSeverity.warn, $"SSDP Multicasting with address {GetLocalIPAddress()} (if this is not your preferred interface, try disabling others)");
+
+                while (true)
                 {
-                    if (res.Contains("ssdp:all") || res.Contains("upnp:rootdevice"))
+                    byte[] data = udpServer.Receive(ref multicastEndpoint);
+                    string res = Encoding.ASCII.GetString(data);
+                    if (res.Contains("M-SEARCH"))
                     {
-                        Thread.Sleep(100);
-                        udpClient.Send(SSDPMessages.ecpDeviceNotifyMessage, SSDPMessages.ecpDeviceNotifyMessage.Length);
-                        udpServer.Send(SSDPMessages.ecpDeviceOKMessage, SSDPMessages.ecpDeviceOKMessage.Length, multicastEndpoint);
+                        if (res.Contains("ssdp:all") || res.Contains("upnp:rootdevice"))
+                        {
+                            Thread.Sleep(100);
+                            udpClient.Send(SSDPMessages.ecpDeviceNotifyMessage, SSDPMessages.ecpDeviceNotifyMessage.Length);
+                            udpServer.Send(SSDPMessages.ecpDeviceOKMessage, SSDPMessages.ecpDeviceOKMessage.Length, multicastEndpoint);
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(Logger.LogSeverity.error, ex.ToString());
             }
         }
         public static string GetLocalIPAddress()

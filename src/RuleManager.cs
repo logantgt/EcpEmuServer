@@ -53,72 +53,65 @@ namespace EcpEmuServer
             {
                 foreach (Rule rule in rules.ruleList)
                 {
-                    Logger.Log(Logger.LogSeverity.info, $"Loaded rule \"{rule.Name}\" from rules.xml for button \"{rule.Button}\"");
+                    Logger.Log(Logger.LogSeverity.success, $"Loaded rule \"{rule.Name}\" from rules.xml for button \"{rule.Button}\"");
                 }
             }        
         }
 
         public void Execute(string button)
         {
-            HttpStatusCode statusCode = HttpStatusCode.Unused;
-
-            foreach (Rule rule in rules.ruleList)
+            try
             {
-                if (rule.Button == button)
+                HttpStatusCode statusCode = HttpStatusCode.Unused;
+
+                foreach (Rule rule in rules.ruleList)
                 {
-                    switch (rule.Action)
+                    if (rule.Button == button)
                     {
-                        case RuleAction.HttpGET:
-                            try
-                            {
+                        switch (rule.Action)
+                        {
+                            case RuleAction.HttpGET:
                                 statusCode = httpClient.GetAsync(rule.EndPoint).Result.StatusCode;
-                            }
-                            catch
-                            {
-                                statusCode = HttpStatusCode.NotFound;
-                            }
-                            break;
-                        case RuleAction.HttpPOST:
-                            try
-                            {
+                                break;
+                            case RuleAction.HttpPOST:
                                 statusCode = httpClient.PostAsync(rule.EndPoint, new StringContent(rule.ExData)).Result.StatusCode;
-                            }
-                            catch
-                            {
-                                statusCode = HttpStatusCode.NotFound;
-                            }
-                            break;
-                        case RuleAction.Execute:
-                            ProcessStartInfo startInfo = new();
-                            startInfo.UseShellExecute = false;
-                            startInfo.FileName = rule.EndPoint;
-                            startInfo.WorkingDirectory = Path.GetFullPath(rule.EndPoint);
-                            startInfo.Arguments = rule.ExData;
-                            startInfo.RedirectStandardOutput = true;
+                                break;
+                            case RuleAction.Execute:
+                                ProcessStartInfo startInfo = new();
+                                startInfo.UseShellExecute = false;
+                                startInfo.FileName = rule.EndPoint;
+                                startInfo.WorkingDirectory = Path.GetFullPath(rule.EndPoint);
+                                startInfo.Arguments = rule.ExData;
+                                startInfo.RedirectStandardOutput = true;
 
-                            using (Process proc = Process.Start(startInfo))
-                            {
-                                while (!proc.StandardOutput.EndOfStream) Console.WriteLine(proc.StandardOutput.ReadLine());
-                                proc.WaitForExit();
-                            }
-                            break;
-                        default:
-                            break;
-                    }
+                                using (Process proc = Process.Start(startInfo))
+                                {
+                                    while (!proc.StandardOutput.EndOfStream) Console.WriteLine(proc.StandardOutput.ReadLine());
+                                    proc.WaitForExit();
+                                }
+                                break;
+                            default:
+                                break;
+                        }
 
-                    switch (statusCode)
-                    {
-                        case HttpStatusCode.NotFound:
-                            Logger.Log(Logger.LogSeverity.error, $"Rule {rule.Name} failed, got HTTP {HttpStatusCode.NotFound}");
-                            break;
-                        case HttpStatusCode.OK:
-                            Logger.Log(Logger.LogSeverity.success, $"Rule {rule.Name} sent, got HTTP {HttpStatusCode.OK}");
-                            break;
-                        default:
-                            Logger.Log(Logger.LogSeverity.info, $"Rule {rule.Name} ran");
-                            break;
+                        switch (statusCode)
+                        {
+                            case HttpStatusCode.NotFound:
+                                throw new BadHttpRequestException($"Rule {rule.Name} failed, got HTTP {HttpStatusCode.NotFound}");
+                                break;
+                            case HttpStatusCode.OK:
+                                Logger.Log(Logger.LogSeverity.success, $"Rule {rule.Name} sent, got HTTP {HttpStatusCode.OK}");
+                                break;
+                            default:
+                                Logger.Log(Logger.LogSeverity.info, $"Rule {rule.Name} ran");
+                                break;
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(Logger.LogSeverity.error, ex.ToString());
             }
         }
     }

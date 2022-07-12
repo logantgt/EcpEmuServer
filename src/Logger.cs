@@ -2,19 +2,20 @@
 {
     public static class Logger
     {
-        public static readonly string logFile = $"logs/EcpEmuServer-{DateTime.Now.ToString().Replace(':', '-').Replace('/', '-').Replace(' ', '-')}.log";
-
-        public static bool LoggerInitiated = false;
-
+        internal static readonly string logFile = $"logs/EcpEmuServer-{DateTime.Now.ToString().Replace(':', '-').Replace('/', '-').Replace(' ', '-')}.log";
+        internal static bool isInitiated = false;
         public static void Init()
         {
-            LoggerInitiated = true;
-            //Directory.CreateDirectory("logs");
-            //File.CreateText(logFile).Close();
+            isInitiated = true;
+            Directory.CreateDirectory("logs");
+            File.CreateText(logFile).Close();
         }
         public static void Log(LogSeverity severity, string text)
         {
-            if (!LoggerInitiated) { Init(); }
+            if(!isInitiated)
+            {
+                Init();
+            }
 
             Console.Write("[");
 
@@ -26,17 +27,15 @@
             Console.Write("] ");
 
             Console.ForegroundColor = severityColor;
-            Console.Write(severity);
+            Console.Write($"{severity} @ {DateTime.Now}");
             Console.ForegroundColor = ConsoleColor.Gray;
 
             Console.Write($": {text}\n");
 
-            /*
             using (StreamWriter logWriter = File.AppendText(logFile))
             {
-                logWriter.WriteLine($"[{severitySymbol}] {severity}: {text}");
+                logWriter.WriteLine($"[{severitySymbol}] {severity} @ {DateTime.Now}: {text}");
             }
-            */
         }
 
         internal static string GetSeveritySymbol(LogSeverity severity)
