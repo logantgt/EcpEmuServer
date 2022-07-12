@@ -51,7 +51,7 @@ namespace EcpEmuServer
             {
                 foreach (Rule rule in rules.ruleList)
                 {
-                    Logger.Log(Logger.LogSeverity.success, $"Loaded rule \"{rule.Name}\" from rules.xml for button \"{rule.Button}\"");
+                    Logger.Log(Logger.LogSeverity.success, $"Loaded {rule.Action} rule \"{rule.Name}\" from rules.xml for button \"{rule.Button}\"");
                 }
             }        
         }
@@ -88,21 +88,20 @@ namespace EcpEmuServer
                                     proc.WaitForExit();
                                 }
                                 break;
+                            case RuleAction.Debug:
+                                statusCode = HttpStatusCode.OK;
+                                break;
                             default:
                                 break;
                         }
 
-                        switch (statusCode)
+                        if (statusCode != HttpStatusCode.Unused)
                         {
-                            case HttpStatusCode.NotFound:
-                                throw new BadHttpRequestException($"Rule \"{rule.Name}\" failed, got HTTP {HttpStatusCode.NotFound} from {rule.EndPoint}");
-                                break;
-                            case HttpStatusCode.OK:
-                                Logger.Log(Logger.LogSeverity.success, $"Rule \"{rule.Name}\" ran, got HTTP {HttpStatusCode.OK} from {rule.EndPoint}");
-                                break;
-                            default:
-                                Logger.Log(Logger.LogSeverity.info, $"Rule \"{rule.Name}\" ran");
-                                break;
+                            Logger.Log(Logger.LogSeverity.info, $"Rule \"{rule.Name}\" ran, got {statusCode} from {rule.EndPoint}");
+                        }
+                        else
+                        {
+                            Logger.Log(Logger.LogSeverity.info, $"Rule \"{rule.Name}\" ran");
                         }
                     }
                 }
@@ -211,6 +210,7 @@ namespace EcpEmuServer
     {
         HttpGET,
         HttpPOST,
-        Execute
+        Execute,
+        Debug
     }
 }
