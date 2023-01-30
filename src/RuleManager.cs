@@ -78,7 +78,7 @@ namespace EcpEmuServer
                                 ProcessStartInfo startInfo = new();
                                 startInfo.UseShellExecute = false;
                                 startInfo.FileName = rule.EndPoint;
-                                startInfo.WorkingDirectory = Path.GetFullPath(rule.EndPoint);
+                                startInfo.WorkingDirectory = Path.GetFullPath(rule.EndPoint).Split(Path.GetFileName(rule.EndPoint))[0];
                                 startInfo.Arguments = rule.ExData;
                                 startInfo.RedirectStandardOutput = true;
 
