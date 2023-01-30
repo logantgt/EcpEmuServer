@@ -64,6 +64,24 @@ namespace EcpEmuServer
 
     public static class SSDPMessages
     {
+        public static string GetSSDPName()
+        {
+            if (!File.Exists("./devicename"))
+            {
+                Logger.Log(Logger.LogSeverity.warn, "devicename was not found, generating default \"EcpEmuServer\"...");
+
+                using (StreamWriter writer = new StreamWriter(File.Create("./devicename")))
+                {
+                    // Default configuration
+                    writer.Write("EcpEmuServer");
+                }
+
+                Logger.Log(Logger.LogSeverity.info, "Generated new devicename file");
+            }
+
+            return File.ReadAllText("./devicename");
+        }
+
         public static readonly byte[] ecpDeviceNotifyMessage = Encoding.ASCII.GetBytes(
             $"NOTIFY * HTTP/1.1\r\n" +
             $"Host: 239.255.255.250:1900\r\n" +
@@ -84,10 +102,10 @@ namespace EcpEmuServer
         public static readonly string ecpDeviceRootResponse =
             $"<root>" +
             $"<device>" +
-            $"<friendlyName>EcpEmuServer</friendlyName>" +
-            $"<manufacturer>Roku</manufacturer>" +
+            $"<friendlyName>{GetSSDPName()}</friendlyName>" +
+            $"<manufacturer>TCL</manufacturer>" +
             $"<manufacturerURL>http://www.github.com/ashifter/EcpEmuServer</manufacturerURL>" +
-            $"<modelName>Streaming Stick+</modelName>" +
+            $"<modelName>7108X</modelName>" +
             $"<serialNumber>{Dns.GetHostName()}</serialNumber>" +
             $"<UDN>uuid:{Dns.GetHostName()}</UDN>" +
             $"</device>" +

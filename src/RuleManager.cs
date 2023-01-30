@@ -53,7 +53,7 @@ namespace EcpEmuServer
                 {
                     Logger.Log(Logger.LogSeverity.success, $"Loaded {rule.Action} rule \"{rule.Name}\" from rules.xml for button \"{rule.Button}\"");
                 }
-            }        
+            }
         }
 
         public void Execute(string button)
