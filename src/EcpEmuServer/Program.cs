@@ -40,6 +40,8 @@ namespace EcpEmuServer
                     return HttpStatusCode.OK;
                 });
 
+                app.UseStaticFiles();
+
                 Thread apiThread = new Thread(new ThreadStart(app.Run));
                 Thread ssdpThread = new Thread(new ThreadStart(SSDPManager.StartSSDP));
 
