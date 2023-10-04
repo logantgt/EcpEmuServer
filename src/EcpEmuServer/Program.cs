@@ -1,4 +1,5 @@
 using System.Net;
+using Microsoft.Extensions.FileProviders;
 
 namespace EcpEmuServer
 {
@@ -17,6 +18,9 @@ namespace EcpEmuServer
                 builder.WebHost.UseUrls("http://*:8060/");
                 WebApplication app = builder.Build();
 
+                app.UseDefaultFiles();
+                app.UseStaticFiles(new StaticFileOptions{ ServeUnknownFileTypes = true, });
+                
                 app.MapGet("/", () =>
                 {
                     Logger.Log(Logger.LogSeverity.info, "Client requested Root XML Response");
@@ -39,8 +43,6 @@ namespace EcpEmuServer
 
                     return HttpStatusCode.OK;
                 });
-
-                app.UseStaticFiles();
 
                 Thread apiThread = new Thread(new ThreadStart(app.Run));
                 Thread ssdpThread = new Thread(new ThreadStart(SSDPManager.StartSSDP));
