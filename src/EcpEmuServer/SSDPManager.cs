@@ -22,7 +22,7 @@ namespace EcpEmuServer
 
                 udpClient.Connect(multicastEndpoint);
 
-                Logger.Log(Logger.LogSeverity.warn, $"SSDP Multicasting with address {GetLocalIPAddress()} (if this is not your preferred interface, try disabling others)");
+                Logger.Log(Logger.LogSeverity.warn, $"SSDP Multicasting with address {GetLocalIPAddress()} (if this is not your preferred interface, provide an IPv4 address as first arg)");
 
                 while (true)
                 {
@@ -46,6 +46,8 @@ namespace EcpEmuServer
         }
         public static string GetLocalIPAddress()
         {
+            if (Program.UserProvidedEndpoint != "") return Program.UserProvidedEndpoint;
+            
             var host = Dns.GetHostEntry(Dns.GetHostName());
             foreach (var ip in host.AddressList)
             {

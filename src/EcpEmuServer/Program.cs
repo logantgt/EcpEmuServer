@@ -5,6 +5,7 @@ namespace EcpEmuServer
 {
     public class Program
     {
+        public static string UserProvidedEndpoint = "";
         public static void Main(string[] args)
         {
             try
@@ -15,7 +16,21 @@ namespace EcpEmuServer
                 RuleManager ruleManager = new RuleManager();
 
                 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-                builder.WebHost.UseUrls("http://*:8060/");
+
+                if (args.Length > 0)
+                {
+                    IPAddress? addr;
+                    if (IPAddress.TryParse(args[0], out addr))
+                    {
+                        builder.WebHost.UseUrls($"http://{args[0]}:8060/");
+                        UserProvidedEndpoint = args[0];
+                    }
+                }
+                else
+                {
+                    builder.WebHost.UseUrls("http://*:8060/");
+                }
+
                 WebApplication app = builder.Build();
 
                 app.UseDefaultFiles();
