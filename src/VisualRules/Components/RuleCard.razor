@@ -1,0 +1,73 @@
+﻿@using VisualRules.Pages
+<div id="cardContainer" style="padding-top:10px;">
+	<div class="card border-primary mb-3" style="max-width: 30rem; margin-left:auto;margin-right:auto;">
+		<div class="card-header" style="padding-left: 10px; padding-right: 10px;">
+			<input type="text" name="rule_name" value="New Rule" class="border-0 text-body" style="margin: 0px; padding: 0px; background: rgba(0,0,0,0); width: 90%; display: inline;" @onchange="SetName">
+			<!--<button type="button" class="btn-close btn-danger" data-bs-dismiss="toast" aria-label="Close" style="display: inline; float: right;" @onclick="@(() => OnDelete.InvokeAsync(Rule.Index))"><span aria-hidden="true"></span></button>-->
+		</div>
+		<div class="card-body lh-lg">
+			<p class="card-text" style="display: inline;">When the Virtual Roku Button </p>
+			<select class="btn btn-primary btn-sm dropdown-toggle border-primary" style="display: inline;" @onchange="SetButton">
+				<option value="Home">Home</option>
+				<option value="Rev">Rev</option>
+				<option value="Fwd">Fwd</option>
+				<option value="Play">Play</option>
+				<option value="Select">Select</option>
+				<option value="Left">Left</option>
+				<option value="Right">Right</option>
+				<option value="Down">Down</option>
+				<option value="Up">Up</option>
+				<option value="Back">Back</option>
+				<option value="InstantReplay">InstantReplay</option>
+				<option value="Info">Info</option>
+				<option value="Backspace">Backspace</option>
+				<option value="Search">Search</option>
+				<option value="Enter">Enter</option>
+			</select>
+			<p class="card-text" style="display: inline;"> is pressed, I want to </p>
+				<select class="btn btn-primary btn-sm dropdown-toggle border-primary" style="display: inline;" @onchange="SetAction">
+				<option value="HttpGET">make an HTTP GET request</option>
+				<option value="HttpPOST">make an HTTP POST request</option>
+				<option value="Execute">execute a program</option>
+				<option value="Debug">do nothing (debug)</option>
+			</select>
+			<p class="card-text" style="display: inline;"> at the location </p>
+			<input type="text" name="rule_endpoint" placeholder="Endpoint" class="btn btn-primary btn-sm border-primary" style="text-align: left; width: 100%;" @onchange="SetEndpoint">
+		</div>
+		<div class="card-footer">
+			<textarea name="rule_exdata" placeholder="Extra Data (if applicable)" class="btn btn-primary btn-sm border-primary" style="text-align: left; width: 100%;" @onchange="SetExData"></textarea>
+		</div>
+	</div>
+</div>
+
+@code
+{
+    [Parameter] public int Index { get; set; }
+	[Parameter] public Types.Rules Rule { get; set; }
+	[Parameter] public EventCallback<int> OnDelete { get; set; }
+
+	void SetName(ChangeEventArgs e)
+	{
+		Rule.Name = e.Value.ToString();
+	}
+
+	void SetButton(ChangeEventArgs e)
+	{
+		Rule.Button = e.Value.ToString();
+	}
+
+	void SetAction(ChangeEventArgs e)
+	{
+		Rule.Action = e.Value.ToString();
+	}
+	
+	void SetEndpoint(ChangeEventArgs e)
+	{
+		Rule.Endpoint = e.Value.ToString();
+	}
+	
+	void SetExData(ChangeEventArgs e)
+	{
+		Rule.ExData = e.Value.ToString();
+	}
+}

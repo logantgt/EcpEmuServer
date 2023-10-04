@@ -1,0 +1,111 @@
+﻿@page "/config"
+@using System.Text
+@inject IJSRuntime js
+
+<script>
+	// Cursed code for initiating client side file download
+	function saveAsFile(filename, text)
+	{
+		const file = new File([text], 'rules.xml', {type: 'text/xml',})
+		
+  		const link = document.createElement('a')
+  		const url = URL.createObjectURL(file)
+
+  		link.href = url
+  		link.download = file.name
+  		document.body.appendChild(link)
+  		link.click()
+
+  		document.body.removeChild(link)
+  		window.URL.revokeObjectURL(url)
+    }
+</script>
+
+<!-- Add Card -->
+<div id="cardContainer" style="padding-top:10px;">
+	<div class="card border-primary mb-3" style="max-width: 30rem; margin-left:auto;margin-right:auto;">
+		<div class="card-header" style="padding-left: 10px; padding-right: 10px;">
+			<p style="display:inline;">Add Card</p>
+		</div>
+		<div class="card-body">
+			<button class="btn btn-secondary" style="width:100%;" @onclick="() => AddNewRule()"><h1 style="text-align:center;">+</h1></button>
+		</div>
+	</div>
+</div> 
+
+<!-- Entry Cards -->
+@foreach (var rule in Rules)
+{
+	<VisualRules.Components.RuleCard Rule=rule Index=Rules.Count-1 OnDelete="DeleteRule"></VisualRules.Components.RuleCard>
+}
+
+<!-- Download Config --> 
+<div id="cardContainer" style="padding-top:10px;">
+	<div class="card border-primary mb-3" style="max-width: 30rem; margin-left:auto;margin-right:auto;">
+		<div class="card-header" style="padding-left: 10px; padding-right: 10px;">
+			<p style="display:inline;">Download <code class="text-body bg-dark">rules.xml</code></p>
+		</div>
+		<div class="card-body">
+			<button class="btn btn-success" style="width:100%;" @onclick="() => DownloadConfig()"><h1 style="text-align:center;">></h1></button>
+		</div>
+	</div>
+</div>
+
+@code
+{
+	public List<VisualRules.Types.Rules> Rules { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		Rules = new();
+	}
+
+	void AddNewRule()
+	{
+		Rules.Add(new Types.Rules());
+	}
+
+	public void DeleteRule(int index)
+	{
+		Rules.RemoveAt(index);
+	}
+
+	void DownloadConfig()
+	{
+		if (Rules.Count < 1) return;
+		StringBuilder sb = new StringBuilder();
+
+		sb.Append("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+		          "<ecpemuserver xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n" +
+		          "  <rules>\n");
+		
+		@foreach (var rule in Rules)
+		{
+			sb.Append("    <rule>\n" +
+			          $"      <Name>{rule.Name}</Name>\n" +
+			          $"      <Button>{rule.Button}</Button>\n" +
+			          $"      <Action>{rule.Action}</Action>\n" +
+			          $"      <EndPoint>{rule.Endpoint}</EndPoint>\n" +
+			          $"      <ExData>{rule.ExData}</ExData>\n" +
+			          "    </rule>\n");
+		}
+
+		sb.Append("  </rules>\n" +
+		          "</ecpemuserver>");
+		
+		Console.WriteLine("Built config;");
+		Console.WriteLine(sb.ToString());
+		FileUtil.SaveAs(js, "rules.xml", sb.ToString());
+	}
+	
+	public static class FileUtil
+	{
+		public async static Task SaveAs(IJSRuntime js, string filename, string data)
+		{
+			await js.InvokeAsync<object>(
+				"saveAsFile",
+				filename,
+				data);
+		}            
+	}
+}
