@@ -71,9 +71,13 @@ EcpEmuServer now ships with a graphical configuration utility which conveniently
 
 ![Graphical Configuration](https://raw.githubusercontent.com/logantgt/EcpEmuServer/main/doc/config_ui.png)
 
-The options here are analoguous to the options available in the XML file. To create a new ``<rule>``, press the large + button under Add Card.
+The options here are analoguous to the options available in the XML file. To create a new ``<rule>``, press the large ``+`` button under Add Card.
 
 You can bind as many cards to a single ``Button`` as desired. 
+
+Once all of your desired configurations have been made, you can export the ``rules.xml`` file by pressing the large ``>`` button under Download ``rules.xml``. This file can replace the ``rules.xml`` that exists in your EcpEmuServer binary directory.
+
+Note that the configuration utility is completely static - it will not load your current configuration, only provide and interface for quickly making a new one. This is by design - it is a security feature.
 
 Example configuration;
 ```xml
