@@ -67,6 +67,14 @@ These will be available as buttons you can add to Sequences in the Harmony app, 
 
 Keep in mind that all requests from rules are made from the machine running EcpEmuServer, *not from the remote itself.*
 
+EcpEmuServer now ships with a graphical configuration utility which conveniently generates ``rule.xml`` files conforming to this scheme.
+
+![Graphical Configuration](https://raw.githubusercontent.com/logantgt/EcpEmuServer/main/doc/config_ui.png)
+
+The options here are analoguous to the options available in the XML file. To create a new ``<rule>``, press the large + button under Add Card.
+
+You can bind as many cards to a single ``Button`` as desired. 
+
 Example configuration;
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
