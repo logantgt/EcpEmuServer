@@ -6,7 +6,7 @@ EcpEmuServer is a small ASP.NET application which allows you to add an emulated 
 
 Compared to HarmonySpan, EcpEmuServer aims to be;
 
- - Faster & Lighter (the .NET 6.0 binary shows significantly less resource usage than its self-contained HarmonySpan equivalent);
+ - Faster & Lighter (the .NET 7.0 binary shows significantly less resource usage than its self-contained HarmonySpan equivalent);
  - Easier to deploy, simple to host multiple instances across individual containers on the network (Docker Template coming soon);
  - Easier to configure, with an intuitive rule-based architecture that allows many endpoints to be bound to a single button;
  - Easier to expand and maintain - It does not depend on any third party libraries like the JS version did, and .NET is much more appropriate for this type of application.
@@ -14,7 +14,7 @@ Compared to HarmonySpan, EcpEmuServer aims to be;
 ![EcpEmuServer](https://raw.githubusercontent.com/AShifter/EcpEmuServer/dbfbe3673b158127ecf418b5a70fe52c2ada9a96/docs/Window.png)
 
 ## Setup
-Ensure your target system has a recent installation of the [.NET Core 6.0 Runtime and ASP.NET Core Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) which are available from Microsoft's website for many different platforms.
+Ensure your target system has a recent installation of the [.NET Core 7.0 Runtime and ASP.NET Core Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/7.0) which are available from Microsoft's website for many different platforms.
 
 Download the latest EcpEmuServer binary [from the releases page](https://github.com/AShifter/EcpEmuServer/releases) for your platform.
 
