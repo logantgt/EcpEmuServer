@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Xml.Serialization;
 
@@ -88,20 +89,32 @@ namespace EcpEmuServer
                                     proc.WaitForExit();
                                 }
                                 break;
+                            case RuleAction.AutoHotKey:
+                                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                                {
+                                    AutoHotKey.SendRawCommand(rule.ExData);
+                                }
+                                else
+                                {
+                                    Logger.Log(Logger.LogSeverity.error, $"Rule \"{rule.Name}\" attempts action \"{rule.Action}\", but this feature is not supported on {RuntimeInformation.OSDescription}, ignoring action");
+                                }
+                                statusCode = HttpStatusCode.Unused;
+                                break;
                             case RuleAction.Debug:
-                                statusCode = HttpStatusCode.OK;
+                                statusCode = HttpStatusCode.Unused;
                                 break;
                             default:
                                 break;
                         }
 
-                        if (statusCode != HttpStatusCode.Unused)
+                        switch (statusCode)
                         {
-                            Logger.Log(Logger.LogSeverity.info, $"Rule \"{rule.Name}\" ran, got {statusCode} from {rule.EndPoint}");
-                        }
-                        else
-                        {
-                            Logger.Log(Logger.LogSeverity.info, $"Rule \"{rule.Name}\" ran");
+                            case HttpStatusCode.Unused:
+                                Logger.Log(Logger.LogSeverity.info, $"Rule \"{rule.Name}\" ran");
+                                break;
+                            default:
+                                Logger.Log(Logger.LogSeverity.info, $"Rule \"{rule.Name}\" ran, got {statusCode} from {rule.EndPoint}");
+                                break;
                         }
                     }
                 }
@@ -211,6 +224,7 @@ namespace EcpEmuServer
         HttpGET,
         HttpPOST,
         Execute,
+        AutoHotKey,
         Debug
     }
 }

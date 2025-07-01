@@ -106,7 +106,7 @@ namespace EcpEmuServer
             $"<device>" +
             $"<friendlyName>{GetSSDPName()}</friendlyName>" +
             $"<manufacturer>TCL</manufacturer>" +
-            $"<manufacturerURL>http://www.github.com/ashifter/EcpEmuServer</manufacturerURL>" +
+            $"<manufacturerURL>http://www.github.com/logantgt/EcpEmuServer</manufacturerURL>" +
             $"<modelName>7108X</modelName>" +
             $"<serialNumber>{Dns.GetHostName()}</serialNumber>" +
             $"<UDN>uuid:{Dns.GetHostName()}</UDN>" +
